@@ -87,32 +87,24 @@
 ;;; limdepthfirstsearch lim = 6
 (defun limdepthfirstsearch (problem lim)
   (let ((state (problem-initial-state problem)))
-    (if (isGoalp state) (list state);;T
+    (if (isGoalp state) (return-from limdepthfirstsearch (list state));;T
       (if (not (equal lim 0))
-        (let ((states (nextStates state)))
-            (dolist (nextNode states)
-              (dotimes (n 5000) (write "Entrei no ciclo")
-              (terpri))
+        (let ((states (nextStates state))
+              (sol nil))
 
+            (dolist (nextNode states)
               (setq sol (limdepthfirstsearch (make-problem  :initial-state nextNode
                                                   :fn-isGoal #'isGoalp
                                                   :fn-nextstates #'nextStates)
                                                   (- lim 1)))
-              (if sol (cons nextNode sol))
-
+              (if sol (return-from limdepthfirstsearch (cons state sol)))
             )
-            (dotimes (n 5000) (write "who let the dogs out")
-            (terpri))
             nil
         )
         nil
       )
     )
-  (dotimes (n 50000) (write "NILAS fodidao")
-  (terpri)
-  (write lim)
-  (terpri))
-  nil)
+    nil)
 )
 
 ;iterlimdepthfirstsearch
@@ -120,5 +112,5 @@
   "limited depth first search
      st - initial state
      problem - problem information
-     lim - limit of depth iterations"
-	(list (make-node :state (problem-initial-state problem))) )
+     lim - limit of depth iterations
+	(list (make-node :state (problem-initial-state problem))) " '())
