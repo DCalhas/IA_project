@@ -85,23 +85,23 @@
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;VER PSEUDOCODIGO PARA VERIFCAR ERRRO
 ;;; limdepthfirstsearch lim = 6
-(defun limdepthfirstsearch (problem lim)
+(defun limdepthfirstsearch (problem lim);;;;;;FALTA VER A CENA DO CORTE
   (let ((state (problem-initial-state problem)))
     (if (isGoalp state) (return-from limdepthfirstsearch (list state));;T
       (if (not (equal lim 0))
         (let ((states (nextStates state))
-              (sol nil))
+              (solution nil))
 
             (dolist (nextNode states)
-              (setq sol (limdepthfirstsearch (make-problem  :initial-state nextNode
+              (setq solution (limdepthfirstsearch (make-problem  :initial-state nextNode
                                                   :fn-isGoal #'isGoalp
                                                   :fn-nextstates #'nextStates)
                                                   (- lim 1)))
-              (if sol (return-from limdepthfirstsearch (cons state sol)))
+              (if (and (not (equal solution ':corte)) solution) (return-from limdepthfirstsearch (cons state solution)))
             )
             nil
         )
-        nil
+        (return-from limdepthfirstsearch ':corte)
       )
     )
     nil)
@@ -109,8 +109,5 @@
 
 ;iterlimdepthfirstsearch
 (defun iterlimdepthfirstsearch (problem &key (lim most-positive-fixnum));most bla bla is highest positive number
-  "limited depth first search
-     st - initial state
-     problem - problem information
-     lim - limit of depth iterations
-	(list (make-node :state (problem-initial-state problem))) " '())
+	;(list (make-node :state (problem-initial-state problem)))
+  nil)
