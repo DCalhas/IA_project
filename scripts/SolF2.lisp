@@ -108,6 +108,6 @@
 )
 
 ;iterlimdepthfirstsearch
-(defun iterlimdepthfirstsearch (problem &key (lim most-positive-fixnum));most bla bla is highest positive number
-	;(list (make-node :state (problem-initial-state problem)))
+(defun iterlimdepthfirstsearch (problem);most bla bla is highest positive number
+	(list (make-node :state (problem-initial-state problem)))
   nil)
