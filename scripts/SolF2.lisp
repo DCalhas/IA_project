@@ -87,9 +87,9 @@
 ;;; limdepthfirstsearch lim = 6
 (defun limdepthfirstsearch (problem lim);;;;;;FALTA VER A CENA DO CORTE
   (let ((state (problem-initial-state problem)))
-    (if (isGoalp state) (return-from limdepthfirstsearch (list state));;T
+    (if (funcall (problem-fn-isGoal problem) state) (return-from limdepthfirstsearch (list state));;T
       (if (not (equal lim 0))
-        (let ((states (nextStates state))
+        (let ((states (funcall (problem-fn-nextStates problem) state))
               (solution nil))
 
             (dolist (nextNode states)
