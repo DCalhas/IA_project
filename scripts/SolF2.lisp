@@ -94,8 +94,8 @@
 
             (dolist (nextNode states)
               (setq solution (limdepthfirstsearch (make-problem  :initial-state nextNode
-                                                  :fn-isGoal #'isGoalp
-                                                  :fn-nextstates #'nextStates)
+                                                  :fn-isGoal (problem-fn-isGoal problem)
+                                                  :fn-nextstates (problem-fn-nextStates problem))
                                                   (- lim 1)))
               (if (and (not (equal solution ':corte)) solution) (return-from limdepthfirstsearch (cons state solution)))
             )
