@@ -12,6 +12,46 @@
 (defvar *track*)
 (setf *track* (loadtrack "track0.txt"))
 
+(defun make-list-track (track)
+    (let ((lst (list ))
+          (sublst (list ))
+          (size (track-size track))
+          (lines 0)
+          (columns 0))
+        (setq lines (nth 0 size))
+        (setq columns (nth 1 size))
+        (dotimes (n lines)
+            (setq sublst (list ))
+            (dotimes (m columns)
+                  (setq sublst (cons most-positive-fixnum sublst))
+                  )
+            (setq lst (cons sublst lst))
+            )
+          lst
+        )
+    )
+
+(defun nextPosition (pos action)
+  (let ((l (+ (nth 0 pos) (nth 0 action)))
+        (c (+ (nth 1 pos) (nth 1 action))))
+  (return-from nextPosition (list l c)))
+
+(defun verifyPos (pos track heuristic_track)
+  (let ((env (track-env track))
+        (posEnv nil)
+        (posHeu nil))
+
+        (setq posEnv (nth (nth 1 pos) (nth (nth 0 pos) env)))
+        (setq posHeu (nth (nth 1 pos) (nth (nth 0 pos) heuristic_track)))
+
+        (if (and posEnv (< posHeu most-positive-fixnum)) t nil)))
+
+(defun expandAdjacents (currentList beenList heuristic-list)
+
+(defun compute-heuristic (st *track*)
+	(let (heuristic_track (make-list-track ))
+        ()
+
 (defvar st)
 (setf st (make-state :pos (track-startpos *track*)
           :vel '(0 1)
