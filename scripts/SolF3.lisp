@@ -69,17 +69,18 @@
     (values new-state)))
 
 
-
 ;; Solution of phase 2
 
 ;;; Pedir
 (defun nextStates (st)
   (let ((moves (possible-actions))
-        (listStates (list )))
+        (listStates (list ))
+        (next-state nil))
         (dolist (move moves)
-            (setq listStates (cons (nextState st move) listStates))
+            (setf next-state (nextState st move))
+            (setf listStates (cons next-state listStates))
         )
-        listStates)
+        (return-from nextStates listStates))
   )
 
 
@@ -128,27 +129,20 @@
 (defun compute-heuristic (st)
   (setf (state-other st) 0)
 	(let ((expandList (list st))
-        (beenlist (list ))
-        (nextStatesList (nextStates st))
-        (currentState nil))
-        (return-from compute-heuristic 0)
+        (beenlist (list st))
+        (currentState st))
+
         (if (isGoalp st) (return-from compute-heuristic (state-other st)))
 
-        (setf currentState (car expandList))
-        (setf expandList (cdr expandList))
-        (setf beenlist (cons currentState beenlist))
-
-
         (loop
-            (dolist (state nextStatesList)
-                    (setf (state-other state) (+ (state-other currentState) 1))
-                    (if (isGoalp state) (write "cnsocisin"))
-                    (if (not (member state beenlist :test #'comparestatesposition)) (and (setf expandList (reverse (cons state (reverse expandList)))) (setf beenlist (cons state beenlist))))
-                    )
             (setf currentState (car expandList))
             (setf expandList (cdr expandList))
-            (setf nextStatesList (nextStates currentState))
-            (when (equal expandList '()) (return-from compute-heuristic ':nasoci))
+            (setf (state-vel currentState) (list 0 0)) ;unitary movements, it needs to have vel at 0
+            (dolist (state (nextStates currentState))
+                    (setf (state-other state) (+ (state-other currentState) 1))
+                    (when (isGoalp state) (return-from compute-heuristic (state-other state)))
+                    (if (not (member state beenlist :test #'comparestatesposition)) (and (setf expandList (reverse (cons state (reverse expandList)))) (setf beenlist (cons state beenlist))))
+                    )
             )
         )
     nil)
