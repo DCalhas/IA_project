@@ -130,19 +130,22 @@
   (setf (state-other st) 0)
 	(let ((expandList (list st))
         (beenlist (list st))
-        (currentState st))
+        (currentState st)
+        (velocity nil))
 
         (if (isGoalp st) (return-from compute-heuristic (state-other st)))
 
         (loop
             (setf currentState (car expandList))
             (setf expandList (cdr expandList))
+            (setf velocity (state-vel currentState))
             (setf (state-vel currentState) (list 0 0)) ;unitary movements, it needs to have vel at 0
             (dolist (state (nextStates currentState))
                     (setf (state-other state) (+ (state-other currentState) 1))
                     (when (isGoalp state) (return-from compute-heuristic (state-other state)))
                     (if (not (member state beenlist :test #'comparestatesposition)) (and (setf expandList (reverse (cons state (reverse expandList)))) (setf beenlist (cons state beenlist))))
                     )
+            (setf (state-vel currentState) velocity)
             )
         )
     nil)
@@ -150,5 +153,39 @@
 
 
 ;;; A*
+
 (defun a* (problem)
-  (list (make-node :state (problem-initial-state problem))))
+  (let ((expandList (list (make-node :state (problem-initial-state problem)
+                    :h (compute-heuristic (problem-initial-state problem))
+                    :g 0
+                    :f (compute-heuristic (problem-initial-state problem)))))
+        (currentNode nil))
+
+      (if (isGoalp (problem-initial-state problem)) (return-from a* (list (problem-initial-state problem))))
+
+      (loop
+        (setf currentNode (car expandList))
+        (setf expandList (cdr expandList))
+        (if (isGoalp (node-state currentNode)) (and (write currentNode) (return-from a* (solution currentNode))))
+        (dolist (next-state (funcall (problem-fn-nextStates problem) (node-state currentNode)))
+          (setf expandList (cons (make-node :parent currentNode
+                                            :state next-state
+                                            :h (compute-heuristic next-state)
+                                            :g (+ (state-cost next-state) (node-g currentNode))
+                                            :f (+ (compute-heuristic next-state) (+ (state-cost next-state) (node-g currentNode)))) expandList))
+          )
+        (sort expandList #'< :key #'node-f)
+        (when (null expandList) (return-from a* nil))
+        )
+      )
+  nil)
+
+
+(defun solution (node)
+  (let ((seq-states nil))
+    (loop
+      (when (null node)
+	(return))
+      (push (node-state node) seq-states)
+      (setf node (node-parent node)))
+    (values seq-states)))
