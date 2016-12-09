@@ -76,6 +76,7 @@
   (let ((moves (possible-actions))
         (listStates (list ))
         (next-state nil))
+
         (dolist (move moves)
             (setf next-state (nextState st move))
             (setf listStates (cons next-state listStates))
@@ -197,3 +198,33 @@
       (push (node-state node) seq-states)
       (setf node (node-parent node)))
     (values seq-states)))
+
+
+(defun compute-heuristic-best-search (st)
+  (setf (state-other st) 0)
+	(let ((expandList (list st))
+        (beenlist (list st))
+        (currentState st))
+
+        (if (isGoalp st) (return-from compute-heuristic-best-search (state-other st)))
+
+        (loop
+            (setf currentState (car expandList))
+            (setf expandList (cdr expandList))
+            (dolist (state (nextStates currentState))
+                    (setf (state-other state) (+ (state-other currentState) 1))
+                    (when (isGoalp state) (return-from compute-heuristic-best-search (state-other state)))
+                    (if (not (member state beenlist :test #'(lambda (a b)
+                                                                    (return (and (equal (state-vel a) (state-vel b)) (equal (state-pos a) (state-pos b))))
+                                                            )))
+                                (and (setf expandList (reverse (cons state (reverse expandList)))) (setf beenlist (cons state beenlist))))
+                    )
+            (if (null expandList) (return-from compute-heuristic-best-search most-positive-fixnum))
+            )
+        )
+    nil)
+
+(defun best-search (problem)
+  (setf (problem-fn-h problem) #'compute-heuristic-best-search)
+  (return-from best-search (a* problem))
+  )
